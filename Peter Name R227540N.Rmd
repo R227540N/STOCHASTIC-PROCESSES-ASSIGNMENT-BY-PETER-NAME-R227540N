@@ -507,6 +507,9 @@ text(bp, comparison + 0.012,
      labels = sprintf("%.3f", comparison),
      cex = 0.85, font = 2)
 
+df_pm <- melt(df_path, id.vars = c("step","time"),
+              variable.name = "State", value.name = "Prob")
+
 # --- Plot 2: Distribution of traffic ---
 p <- ggplot(df_pm, aes(step, Prob, colour = State)) +
   geom_line(linewidth = 1) + geom_point(size = 2) +
