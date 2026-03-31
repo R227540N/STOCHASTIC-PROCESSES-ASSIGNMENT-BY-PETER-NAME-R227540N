@@ -7,21 +7,19 @@ R227540N
 
 ```{r}
 #Libraries
+#Libraries
 library(pacman)
 pacman::p_load(dplyr,
                data.table,
                R.utils,
                igraph,
-               reshape2)
+               reshape2,markovchain,
+               ggplot2)
 ```
 
 Helper Functions
 
 ```{r}
-set.seed(42)
-
-# HELPER FUNCTIONS
-
 # Simulate one trajectory of a Markov chain
 simulate_mc <- function(P, start, n_steps = 50) {
   n_states <- nrow(P)
@@ -55,9 +53,12 @@ steady_state <- function(P) {
 # GCD for period computation
 gcd <- function(a, b) { if (b == 0) a else gcd(b, a %% b) }
 
-# Period of state i (0-indexed internally): count step lengths of
-# all paths i -> i and take their GCD.
+# Period of state i: count step lengths of all paths i -> i and take their GCD.
+# FIX: Added the missing closing bracket and state index handling
 period_state <- function(P, i, max_power = 60) {
+  # If 'i' is passed as a string (e.g., "S1"), convert to numeric index
+  if(is.character(i)) i <- which(rownames(P) == i)
+  
   n  <- nrow(P)
   Pk <- diag(n)          # P^0
   d  <- 0
@@ -66,7 +67,8 @@ period_state <- function(P, i, max_power = 60) {
     if (Pk[i, i] > 1e-12) d <- gcd(d, k)
   }
   if (d == 0) d <- Inf   # absorbing / never returns
-  d
+  return(d) 
+} 
 ```
 
 QUESTION 1A
@@ -104,9 +106,10 @@ cat("\nTransient classes:\n"); print(transientClasses(mc1))
 cat("\nAbsorbing states:\n"); print(absorbingStates(mc1))
 
 cat("\nPeriods:\n")
-for (s in states1) {
-  d <- state_period(P1, s, states1)
-  print(paste(s, d))
+for (i in seq_along(states1)) {
+  # We pass the numeric index 'i' to the helper function
+  d <- period_state(P1, i) 
+  cat(states1[i], ": ", d, "\n")
 }
 ```
 ```{r}
