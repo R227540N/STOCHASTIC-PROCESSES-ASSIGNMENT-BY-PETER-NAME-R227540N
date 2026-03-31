@@ -275,17 +275,23 @@ legend("bottomleft",
 ```
 ```{r}
 #QUESTION A2 part b
+states2 <- c("S1","S2","S3","S4","S5","S6","S7")
+
+mc2 <- new("markovchain",
+           states = states2,
+           transitionMatrix = P2,
+           name = "MC2")
 
 cat("\nCommunicating classes:\n"); print(communicatingClasses(mc2))
+
 cat("\nRecurrent classes:\n"); print(recurrentClasses(mc2))
+
 cat("\nTransient classes:\n"); print(transientClasses(mc2))
+
 cat("\nAbsorbing states:\n"); print(absorbingStates(mc2))
 
-cat("\nPeriods:\n")
-for (s in states2) {
-  d <- state_period(P2, s, states2)
-  print(paste(s, d))
-}
+cat("\nPeriods of states:\n")
+print(period(mc2))
 ```
 ```{r}
 #QUESTION A2 part c
